@@ -1,7 +1,7 @@
 # spring-security-login
 
 <details>
-<summary>로그인 로직에 관하여</summary>
+<summary>##로그인 로직에 관하여</summary>
 
 ## 0. 개요
 
