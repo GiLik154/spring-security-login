@@ -13,19 +13,20 @@ Spring Security로 로그인 기능을 구현하면 많은 이점이 있다.
 
 ## 1. Spring Security의 Login Config 셋팅
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9285c4ea-4bda-43ea-8d93-79e2cd98d16a/Untitled.png)
+![Untitled (1)](https://github.com/GiLik154/spring-security-login/assets/118507239/bfc3792c-8d7c-48da-91cb-40fa38a633a4)
+
 
 위에 주석으로 다 달아두었지만 다시 설명을 한다.
 
 예전에는 `WebSecurityConfigurerAdapter` 를 상속 받아서 오버라이딩으로 구현했으나, 현재는 빈으로 구현하고 있다.
 
-![스크린샷 2023-06-01 오후 9.08.09.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/08c1a52a-763a-4e36-b3ec-c64e34d95128/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2023-06-01_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_9.08.09.png)
+![스크린샷 2023-06-01 오후 9 08 09](https://github.com/GiLik154/spring-security-login/assets/118507239/12347f31-d50b-4760-a3ec-b1b595870d57)
 
 상세 정보에 들어가면 주석에 Bean으로 등록하는 방법을 친절하게 잘 적어뒀다.
 쉽게 설명하면 and()가 하나의 괄호 라고 생각을 하면 편할 것 같다.
 예시를 들어 
 
-![스크린샷 2023-06-01 오후 9.09.32.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/59bfd98e-1829-4cd3-a53a-22f3dae4be02/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2023-06-01_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_9.09.32.png)
+![스크린샷 2023-06-01 오후 9 09 32](https://github.com/GiLik154/spring-security-login/assets/118507239/351defcd-e36d-42ee-bb3a-277bd3012552)
 
 `formLogin()` 의 처리가 끝나면 and로 괄호를 닫고 `.logout()` 로 새로 괄호를 열어 코딩을 하는 느낌이었다. 따라소 위와 같이 줄을 정리해놓은면 가독성이 더 좋을 것 같다.
 
@@ -42,19 +43,19 @@ CSRF을 사용하고
 
 ## 2. Spring Security의 UserDetails셋팅
 
-![무제.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/41e2087a-c07f-4201-aa7e-9cb56a4ee515/%E1%84%86%E1%85%AE%E1%84%8C%E1%85%A6.jpg)
+![무제](https://github.com/GiLik154/spring-security-login/assets/118507239/be23fd51-940f-4f96-a7e1-baed17fda53c)
 
 위와 같이 설정을 하면 된다.
 각 메소드는 주석을 달아놓았다.
 
 여기서 우리가 주의깊게 봐야하는 부분이 몇 군대 있는데
 
-![스크린샷 2023-06-01 오후 9.21.21.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/d25e77a4-3e0c-41cf-8c1f-f3c72dcf07c4/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2023-06-01_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_9.21.21.png)
+![스크린샷 2023-06-01 오후 9 21 21](https://github.com/GiLik154/spring-security-login/assets/118507239/3955e0fd-1ed1-48f5-9d14-ba19a6348ea3)
 
 우선 User을 가지고 있어야만 생성될 수 있도록 생성자를 만드는 부분이 필수적이다.
 이 User의 정보를 가지고 검증을 하기 때문이다.
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/fcac5857-b9ef-480a-9f6f-8436cf670b40/Untitled.png)
+![Untitled (2)](https://github.com/GiLik154/spring-security-login/assets/118507239/cda151a9-bbbb-46fa-af6c-2a6fa326d0bd)
 
 이런식으로 Password와 username을 반환해주어야 인증을 할 수 있다.
 위에는 유저의 등급을 확인하는 구간도 있는데, 그 쪽은 이따 등급에 관해서 이야기를 할 때 설명하도록 하겠다.
@@ -64,7 +65,7 @@ CSRF을 사용하고
 
 ## 3. Spring Security의 UserDetailsService셋팅
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/88e502f5-566e-4b47-97a4-8a964fac67a6/Untitled.png)
+![Untitled (3)](https://github.com/GiLik154/spring-security-login/assets/118507239/10518d51-4634-46e9-bab6-b5c6e7b38c88)
 
 `UserDetailsService`를 구현하면 위와 같은 형식으로 작성하게 된다.
 UserDetails를 상속받은 `UserDetailsImp`를 리턴해주어야 한다.
@@ -75,7 +76,7 @@ UserDetails를 상속받은 `UserDetailsImp`를 리턴해주어야 한다.
 
 ## 4. Spring Security의 로그인 처리 로직?
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/3402bfa1-fde8-421d-beb4-38f5d97b6ba2/Untitled.png)
+![Untitled (4)](https://github.com/GiLik154/spring-security-login/assets/118507239/58c69055-89f2-42db-9d0b-a488ea56f3ab)
 
 위의 코드에서 `DaoAuthenticationProvider` 에서 오는거였다.
 `AuthenticationProcessingFilter` ****에서 username과 password를 받아 
