@@ -1,7 +1,7 @@
 # spring-security-login
 
 <details>
-<summary>로그인 로직에 관하여</summary>
+<summary>Spring Security의 로그인 처리</summary>
 
 ## 0. 개요
 
@@ -102,4 +102,94 @@ UserDetails를 상속받은 `UserDetailsImp`를 리턴해주어야 한다.
 심지어 왜? 작동하는지에 대해서 의문을 가지는 사람조차 많지 않아 정보를 찾는데에 어려움이 많이 있었다.
 내가 조사한 자로들이 여러분들게 조금이나마 도움이 되었으면 좋겠고, 더 나은 문서를 작업하기 위해 노력해보도록 하겠습니다.
 
+  
+</details>
+ 
+  
 <details>
+<summary>Spring Security의 권한 설정</summary>
+  
+  ## 0. 개요
+
+스프링 시
+
+Spring Security의 권한을 이용하면 다양한 것을 쉽게 사용이 가능하다.
+예를 들면 Admin 사이트에 권한이 없으면 접근하지 못하는 경우 등이 그렇다.
+
+## 1. Spring Security의 Login Config 셋팅
+
+  ![Untitled (2)](https://github.com/GiLik154/spring-security-login/assets/118507239/f1decf60-67a6-46e3-8aee-99e0b560cc96)
+
+  ![Untitled (3)](https://github.com/GiLik154/spring-security-login/assets/118507239/16442a14-99ba-4e41-962d-dc999c483e63)
+
+
+자세한 설명은 로그인에 관해서 적어놓은 글에 적어두었습니다.
+위의 링크는 테스트를 위하여 설정하였습니다.
+
+## 2. Enum 셋팅
+
+![Untitled (4)](https://github.com/GiLik154/spring-security-login/assets/118507239/180f6b4b-e78b-44af-be8d-1a79d915b946)
+
+테스틀 위하여 3가지 단계를 설정하였습니다.
+또한 Spring Security의 경우 ROLE_이라는 접두사가 붙어야 하기 때문에 Get메소에 
+`return "ROLE_" + name();` 와 같이 설정하였습니다.
+
+ROLE_을 생략하고 싶다면
+
+![Untitled (5)](https://github.com/GiLik154/spring-security-login/assets/118507239/bd4f2b3c-fea6-49ee-be99-a9e368a2eaa9)
+
+위와 같이 `hasAnyAuthority` 를 사용하면 되긴한다.
+하지만 스프링 시큐리티의 기본 로직은 ROLE_ 을 사용하기 때문에 권장하지는 않는 방법인 듯 하다.
+
+## 3. UserDetails 셋팅
+
+![Untitled (6)](https://github.com/GiLik154/spring-security-login/assets/118507239/6b7b9ab3-3096-4297-91e2-11e80c9c6a91)
+
+이후 위와 같은 방식으로 사용자의 등급을 넣어주어야 한다.
+
+![Untitled (7)](https://github.com/GiLik154/spring-security-login/assets/118507239/650a060c-51ad-4512-865b-de97f6c06f0c)
+
+로그인을 하고 디버깅을 찍어보면 아래와 같이 정보들이 잘 들어가는 것을 볼 수 있다.
+
+## 4-0 init
+
+![Untitled (8)](https://github.com/GiLik154/spring-security-login/assets/118507239/cea82e00-eb4e-45d5-a88a-27b36bfc381c)
+
+2개의 계정을 준비했고
+
+![Untitled (9)](https://github.com/GiLik154/spring-security-login/assets/118507239/ce6b795e-0649-4241-932f-9b80776e4e56)
+
+2개의 사이트를 준비하였다.
+
+## 4-1 USER등급의 사이트 접속
+
+우선 유저로 접속을 하면
+  
+<img width="421" alt="Untitled (10)" src="https://github.com/GiLik154/spring-security-login/assets/118507239/6abd6dba-bf1b-4899-9361-b5f11ccd0b3c">
+
+
+user 사이트에는 접속이 잘 되나, 
+
+<img width="464" alt="Untitled (11)" src="https://github.com/GiLik154/spring-security-login/assets/118507239/fd62ace0-31de-4dec-b9f7-de0aeee7fefb">
+
+admin 사이트에는 접속이 안되는 것을 볼 수 있다. 
+
+## 4-2 ADMIN 등급의 사이트 접속
+
+admin의 경우는 user사이트에도 접속이 되고
+
+<img width="446" alt="Untitled (12)" src="https://github.com/GiLik154/spring-security-login/assets/118507239/5abceb46-99dc-48dd-9b00-b85b7b3485d0">
+
+admin 사이트에도 접속이 잘 되는것을 볼 수 있다.
+
+<img width="456" alt="Untitled (13)" src="https://github.com/GiLik154/spring-security-login/assets/118507239/0fdf37b5-31c6-4be1-8534-cd08cc5050b4">
+
+## 5. 결론
+
+위와 같이 스프링 시큐리티의 권한을 이용하면 쉽게 사이트 별 접속 권한을 설정해 줄 수 있고
+손 쉽게 코딩을 진행할 수 있다.
+원래라면 인터셉터나 필터를 통해 우리가 구현해주어야 하는 부분을 쉽게 구현할 수 있다는 장점이 있다.
+단점으로는 구현하는 것이 조금 까다롭고, `UserDetails` 을 필수로 구현을 하다 보니 개개인의 코딩 스타일에 맞지 않는 경우도 있을 수 있다는 생각이 든다.
+하지만 편리하고 강력한 기능인 것을 확실하니, 알고 있다면 도움이 많이 될 것이라고 생각했다.
+  
+</details>
