@@ -192,4 +192,82 @@ admin 사이트에도 접속이 잘 되는것을 볼 수 있다.
 단점으로는 구현하는 것이 조금 까다롭고, `UserDetails` 을 필수로 구현을 하다 보니 개개인의 코딩 스타일에 맞지 않는 경우도 있을 수 있다는 생각이 든다.
 하지만 편리하고 강력한 기능인 것을 확실하니, 알고 있다면 도움이 많이 될 것이라고 생각했다.
   
+  
+  
+  
+  
+</details>
+
+<details>
+<summary>Spring Security의 유저 정보 처리 방법</summary>
+  ## 0. 개요
+
+Spring Security의 로그인 기능을 이용하면 유저의 정보를 받아오는 것이 매우 편해진다.
+`UserDetails`의 정보를 알아서 파싱해주기 때문이다.
+어떤식으로 파싱이되고, 어떻게 하면 정보들을 읽어올 수 있는지에 대해서 알아보려고 한다.
+
+## 1. Spring Security의 처리 방법?
+
+Spring Security는 세션을 사용하는 방법으로 로그인 처리를 진행한다.
+
+![Untitled (14)](https://github.com/GiLik154/spring-security-login/assets/118507239/81adbf9d-2bcc-453d-b18d-6edd9759d15f)
+
+로그인을 시도하면 JSESSIONID를 이렇게 반환하는것을 알 수 있다.
+이것이 세션 키라는 것을 대부분의 사람들은 다 알고 있을 것이다.
+
+![Untitled (15)](https://github.com/GiLik154/spring-security-login/assets/118507239/1792cd11-5915-4ab7-95c8-b0e903c4e2b1)
+
+세션을 뜯어보기 위해서 위와 같은 코드를 작성했다.
+
+![Untitled (16)](https://github.com/GiLik154/spring-security-login/assets/118507239/53fd63fd-79a3-4d2c-b2ba-bdfbea5cde4b)
+
+`SPRING_SECURITY_CONTEXT` 를 통해서 `SecurityContext` 를 받아올 수 있고,
+`SecurityContext` 안에는 `Authentication` 가 있는 것을 확인할 수 있다.
+`Authentication` 의 안에는 `getPrincipal`룰 통해 `userDetailsImpl` 를 받아올 수 있는 것을 확인할 수 있다.
+`userDetailsImpl` 은 우리가 이전에도 본 것 처럼 유저의 정보가 담겨있다.
+
+`userDetailsImpl.getUsername()` 를 하면 이제 로그인 한 유저의 이름을 받아올 수 있게 된다.
+
+위의 로직을 위해 세션을 보내주는 곳은
+
+![Untitled (17)](https://github.com/GiLik154/spring-security-login/assets/118507239/867f7fca-32eb-4e47-bb3e-f6e546d239cb)
+
+이곳이었다. 이곳에서 로직을 살펴보니
+  
+![Untitled (18)](https://github.com/GiLik154/spring-security-login/assets/118507239/2df6bfc0-563d-4bd9-8dd8-a8e2fca93a59)
+
+위와 같은 로직을 실행 후에 `httpSession.setAttribute(springSecurityContextKey, context);` 를 하는 것을 살펴볼 수 있었다.
+
+하지만 이렇게 매번 세션을 파싱해서 하는 방법은 너무 귀찮고 복잡하고 세션의 name을 외워야 하는 불상사가 있다. 이것을 해결해주기 위해서 스프링 부트는 2가지 방법을 더 제시해주고 있다.
+
+## 2. Spring Boot에서 권하는 방법은?
+
+![Untitled (19)](https://github.com/GiLik154/spring-security-login/assets/118507239/7688bd6c-0e40-4f51-8172-855455ca9521)
+
+우선 2가지를 전체적으로 보면 이 차이이다.
+
+`SecurityContextHolder`를 통해 `Authentication` 를 받아오거나
+`Authentication` 를 매개 변수로 받아올 수 있다.
+
+이것은 취향에 따라 다르지만, 결국 똑같이 작동한다는 것을 알 수 있다.
+어느 쪽을 선택 하는 것이 가독성이 더 좋은지에 따라는 사람마다 다를 것이다.
+
+## 3. User의 다른 정보를 가지고 오고 싶은데?
+
+이건 아주 쉽다. 내가 구현한 `UserDetails` 에 get메소드만 더 넣어주면 된다.
+
+![Untitled (20)](https://github.com/GiLik154/spring-security-login/assets/118507239/de6f8a25-680d-43f1-82aa-f21d1f352b93)
+
+위와 같은 방식으로 말이다.
+단 주의해야 할 점은, 보안적인 요소를 신경써서 어디까지 우리가 의존해도 될까? 를 고민하면 될 것 같다.
+
+## 4. 결론
+
+Spring Security에서 로그인을 하고 유저 정보를 읽어오는 로직이 궁금했다.
+그래서 많이 찾아봤지만, 세션을 이용한다는 것을 빼고 어떤식으로 작동하는지에 대한 설명은 많지 않았다.
+세션을 어디서 보내고, 어떤 이름으로 보내고 어떤 로직들이 처리가 되어야 하는지에 대한 내용이 많지 않아
+조사하는데 시간이 조금 많이 걸렸다.
+하지만 이렇게 조사하고 나니 조금 속이 시원하긴 하지만, 정말 복잡하게 얽혀있는 로직이라는 생각이 들었다.
+이것을 알고 있다고 하여서 도움이 많이 되진 않겠지만, 그래도 나 처럼 궁금한 사람들에게는 도움이 되었으면 좋겠다.
+
 </details>
