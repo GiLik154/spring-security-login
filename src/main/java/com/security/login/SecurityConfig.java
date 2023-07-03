@@ -5,14 +5,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
     /**
      * Spring Security에 대한 기본적인 설정을 정의하는 메서드입니다.
      * 이 메서드는 SecurityFilterChain을 생성하여 반환하는 Bean으로 등록됩니다.
@@ -31,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/**").permitAll()
                 .and()
                     .formLogin()
+                    .loginPage("/login")
                     .loginProcessingUrl("/login")
                     .defaultSuccessUrl("/")
                 .and()
@@ -45,7 +45,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // `antMatchers("/admin").hasRole("ADMIN")`: '/admin' 경로에 접근하기 위해 'ADMIN' 권한이 필요합니다.
         // `antMatchers("/**").permitAll()`: 모든 경로에 대한 접근을 허용합니다.
         // `formLogin()`: 폼 로그인에 관한 설정을 시작합니다.
-        // `loginProcessingUrl("/login")`: 로그인 처리를 담당하는 URL을 설정합니다.
+        // 'loginPage("/login")' 로그인 페이지를 설정합니다 (Get 요청)
+        // `loginProcessingUrl("/login")`: 로그인 처리를 담당하는 URL을 설정합니다. (Post 요청)
         // `defaultSuccessUrl("/")`: 로그인 성공 후 사용자를 리디렉션할 기본 URL을 설정합니다.
         // `logout()`: 로그아웃에 관한 설정을 시작합니다.
         // `logoutUrl("/logout")`: 로그아웃 처리를 담당하는 URL을 설정합니다.

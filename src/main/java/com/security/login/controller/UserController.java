@@ -13,11 +13,8 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class UserController {
 
-    @GetMapping("")
+    @GetMapping("/user")
     public String session(HttpSession session, Model model) {
-
-        SecurityContextHolder.getContext().getAuthentication().getDetails();
-
         SecurityContext securityContext = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
         Authentication authentication = securityContext.getAuthentication();
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) authentication.getPrincipal();
@@ -27,9 +24,8 @@ public class UserController {
         return "thymeleaf/index";
     }
 
-    @GetMapping("")
+    @GetMapping("/check")
     public String securityContextHolder(Model model) {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
@@ -42,7 +38,6 @@ public class UserController {
 
     @GetMapping("/admin")
     public String authentication(Model model, Authentication authentication) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) principal;

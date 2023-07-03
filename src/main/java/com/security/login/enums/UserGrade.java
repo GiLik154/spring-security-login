@@ -18,3 +18,4 @@ public enum UserGrade implements GrantedAuthority {
         return "ROLE_" + name();
     }
 }
+

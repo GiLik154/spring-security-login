@@ -1,11 +1,9 @@
 package com.security.login.domain.security;
 
 import com.security.login.domain.user.domain.User;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
+import com.security.login.enums.UserGrade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +15,15 @@ import java.util.Collection;
  */
 public class UserDetailsImpl implements UserDetails {
     private final transient User user;
+
+    /**
+     * 사용자의 등급을 반환하는 메서드입니다.
+     *
+     * @return 사용자의 등급
+     */
+    public UserGrade getUserGrade(){
+        return user.getUserGrade();
+    }
 
     /**
      * UserDetail 객체를 생성하는 생성자입니다.
