@@ -61,19 +61,18 @@ public class SecurityConfig {
     }
 ```
 
-
 위에 주석으로 다 달아두었지만 다시 설명을 한다.
 
 예전에는 `WebSecurityConfigurerAdapter` 를 상속 받아서 오버라이딩으로 구현했으나, 현재는 빈으로 구현하고 있다.
 
-![스크린샷 2023-06-01 오후 9 08 09](https://github.com/GiLik154/spring-security-login/assets/118507239/12347f31-d50b-4760-a3ec-b1b595870d57)
+![스크린샷 2023-06-01 오후 9.08.09.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/08c1a52a-763a-4e36-b3ec-c64e34d95128/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2023-06-01_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_9.08.09.png)
 
 상세 정보에 들어가면 주석에 Bean으로 등록하는 방법을 친절하게 잘 적어뒀다.
 쉽게 설명하면 and()가 하나의 괄호 라고 생각을 하면 편할 것 같다.
 예시를 들어 
 
 ```java
-		.and()
+								.and()
                     .formLogin()
                     .loginPage("/login")
                     .loginProcessingUrl("/login")
@@ -84,7 +83,7 @@ public class SecurityConfig {
                     .logoutSuccessUrl("/login")
 ```
 
-`formLogin()` 의 처리가 끝나면 and로 괄호를 닫고 `.logout()` 로 새로 괄호를 열어 코딩을 하는 느낌이었다. 따라서 위와 같이 줄을 정리해놓은면 가독성이 더 좋을 것 같다.
+`formLogin()` 의 처리가 끝나면 and로 괄호를 닫고 `.logout()` 로 새로 괄호를 열어 코딩을 하는 느낌이었다. 따라소 위와 같이 줄을 정리해놓은면 가독성이 더 좋을 것 같다.
 
 나의 셋팅을 하나씩 살펴보면
 CSRF을 사용하고
@@ -99,19 +98,153 @@ CSRF을 사용하고
 
 ## 2. Spring Security의 UserDetails셋팅
 
-![무제](https://github.com/GiLik154/spring-security-login/assets/118507239/be23fd51-940f-4f96-a7e1-baed17fda53c)
+```java
+/**
+ * 사용자 정보를 담은 User 객체를 UserDetails 인터페이스를 구현하여 래핑한 클래스입니다.
+ * 주어진 User 객체에서 필요한 정보를 추출하여 UserDetails의 메서드를 구현합니다.
+ */
+public class UserDetailsImpl implements UserDetails {
+    private final transient User user;
+
+    /**
+     * UserDetail 객체를 생성하는 생성자입니다.
+     *
+     * @param user 사용자 정보를 담은 User 객체
+     */
+    public UserDetailsImpl(User user) {
+        this.user = user;
+    }
+
+    /**
+     * 사용자의 권한 정보를 반환하는 메서드입니다.
+     * User 객체에서 사용자 등급(UserGrade)을 추출하여 해당 등급의 권한을 반환합니다.
+     *
+     * @return 사용자의 권한 정보를 나타내는 GrantedAuthority 컬렉션
+     */
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Collection<GrantedAuthority> collection = new ArrayList<>();
+        collection.add((GrantedAuthority) () -> user.getUserGrade().getAuthority());
+        return collection;
+    }
+
+    /**
+     * 사용자의 비밀번호를 반환하는 메서드입니다.
+     *
+     * @return 사용자의 비밀번호
+     */
+    @Override
+    public String getPassword() {
+        return user.getPassword();
+    }
+
+    /**
+     * 사용자의 이름(username)을 반환하는 메서드입니다.
+     *
+     * @return 사용자의 이름(username)
+     */
+    @Override
+    public String getUsername() {
+        return user.getName();
+    }
+
+    /**
+     * 사용자 계정의 만료 여부를 반환하는 메서드입니다.
+     * 항상 true를 반환하여 계정이 만료되지 않았음을 나타냅니다.
+     *
+     * @return 사용자 계정의 만료 여부
+     */
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    /**
+     * 사용자 계정의 잠김 상태 여부를 반환하는 메서드입니다.
+     * 항상 true를 반환하여 계정이 잠겨있지 않음을 나타냅니다.
+     *
+     * @return 사용자 계정의 잠김 상태 여부
+     */
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    /**
+     * 사용자 계정의 비밀번호 만료 여부를 반환하는 메서드입니다.
+     * 항상 true를 반환하여 비밀번호가 만료되지 않았음을 나타냅니다.
+     *
+     * @return 사용자 계정의 비밀번호 만료 여부
+     */
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    /**
+     * 사용자 계정의 활성화 여부를 반환하는 메서드입니다.
+     * 항상 true를 반환하여 계정이 활성화되어 있음을 나타냅니다.
+     *
+     * @return 사용자 계정의 활성화 여부
+     */
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    /**
+     * 사용자의 등급을 반환하는 메서드입니다.
+     *
+     * @return 사용자의 등급
+     */
+    public UserGrade getUserGrade(){
+        return user.getUserGrade();
+    }
+}
+```
 
 위와 같이 설정을 하면 된다.
 각 메소드는 주석을 달아놓았다.
 
 여기서 우리가 주의깊게 봐야하는 부분이 몇 군대 있는데
 
-![스크린샷 2023-06-01 오후 9 21 21](https://github.com/GiLik154/spring-security-login/assets/118507239/3955e0fd-1ed1-48f5-9d14-ba19a6348ea3)
+```java
+private final transient User user;
+
+    /**
+     * UserDetail 객체를 생성하는 생성자입니다.
+     *
+     * @param user 사용자 정보를 담은 User 객체
+     */
+    public UserDetailsImpl(User user) {
+        this.user = user;
+    }
+```
 
 우선 User을 가지고 있어야만 생성될 수 있도록 생성자를 만드는 부분이 필수적이다.
 이 User의 정보를 가지고 검증을 하기 때문이다.
 
-![Untitled (2)](https://github.com/GiLik154/spring-security-login/assets/118507239/cda151a9-bbbb-46fa-af6c-2a6fa326d0bd)
+```java
+/**
+     * 사용자의 비밀번호를 반환하는 메서드입니다.
+     *
+     * @return 사용자의 비밀번호
+     */
+    @Override
+    public String getPassword() {
+        return user.getPassword();
+    }
+
+    /**
+     * 사용자의 이름(username)을 반환하는 메서드입니다.
+     *
+     * @return 사용자의 이름(username)
+     */
+    @Override
+    public String getUsername() {
+        return user.getName();
+    }
+```
 
 이런식으로 Password와 username을 반환해주어야 인증을 할 수 있다.
 위에는 유저의 등급을 확인하는 구간도 있는데, 그 쪽은 이따 등급에 관해서 이야기를 할 때 설명하도록 하겠다.
@@ -121,7 +254,28 @@ CSRF을 사용하고
 
 ## 3. Spring Security의 UserDetailsService셋팅
 
-![Untitled (3)](https://github.com/GiLik154/spring-security-login/assets/118507239/10518d51-4634-46e9-bab6-b5c6e7b38c88)
+```java
+@Service
+@RequiredArgsConstructor
+public class UserDetailsServiceImpl implements UserDetailsService {
+    private final UserRepository userRepository;
+
+    /**
+     * Login 사이트에 접근하면 가장 먼저 실행되는 메서드입니다.
+     * 주어진 사용자 이름(username)을 기반으로 사용자 정보를 조회하고,
+     * 조회된 정보를 UserDetails 객체로 변환하여 반환하면 Spring Security의 로그인 처리가 시작됩니다.
+     * 이 메서드는 데이터베이스에서 사용자 정보를 조회하는 방식이나 MyBatis, JPA 등에 따라 다를 수 있습니다.
+     *
+     * @param username 사용자 이름(username)으로 사용자 정보를 조회하기 위한 식별자
+     * @return UserDetails 객체로 변환된 사용자 정보
+     * @throws UsernameNotFoundException 주어진 사용자 이름으로 사용자를 찾을 수 없는 경우 발생하는 예외
+     */
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return new UserDetailsImpl(userRepository.findByName(username).orElseGet(null));
+    }
+}
+```
 
 `UserDetailsService`를 구현하면 위와 같은 형식으로 작성하게 된다.
 UserDetails를 상속받은 `UserDetailsImp`를 리턴해주어야 한다.
@@ -132,7 +286,7 @@ UserDetails를 상속받은 `UserDetailsImp`를 리턴해주어야 한다.
 
 ## 4. Spring Security의 로그인 처리 로직?
 
-![Untitled (4)](https://github.com/GiLik154/spring-security-login/assets/118507239/58c69055-89f2-42db-9d0b-a488ea56f3ab)
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/3402bfa1-fde8-421d-beb4-38f5d97b6ba2/Untitled.png)
 
 위의 코드에서 `DaoAuthenticationProvider` 에서 오는거였다.
 `AuthenticationProcessingFilter` ****에서 username과 password를 받아 
