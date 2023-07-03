@@ -73,7 +73,7 @@ public class SecurityConfig {
 예시를 들어 
 
 ```java
-								.and()
+		.and()
                     .formLogin()
                     .loginPage("/login")
                     .loginProcessingUrl("/login")
