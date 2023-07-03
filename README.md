@@ -72,9 +72,19 @@ public class SecurityConfig {
 쉽게 설명하면 and()가 하나의 괄호 라고 생각을 하면 편할 것 같다.
 예시를 들어 
 
-![스크린샷 2023-06-01 오후 9 09 32](https://github.com/GiLik154/spring-security-login/assets/118507239/351defcd-e36d-42ee-bb3a-277bd3012552)
+```java
+								.and()
+                    .formLogin()
+                    .loginPage("/login")
+                    .loginProcessingUrl("/login")
+                    .defaultSuccessUrl("/")
+                .and()
+                    .logout()
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login")
+```
 
-`formLogin()` 의 처리가 끝나면 and로 괄호를 닫고 `.logout()` 로 새로 괄호를 열어 코딩을 하는 느낌이었다. 따라소 위와 같이 줄을 정리해놓은면 가독성이 더 좋을 것 같다.
+`formLogin()` 의 처리가 끝나면 and로 괄호를 닫고 `.logout()` 로 새로 괄호를 열어 코딩을 하는 느낌이었다. 따라서 위와 같이 줄을 정리해놓은면 가독성이 더 좋을 것 같다.
 
 나의 셋팅을 하나씩 살펴보면
 CSRF을 사용하고
