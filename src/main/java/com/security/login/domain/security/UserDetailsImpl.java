@@ -17,15 +17,6 @@ public class UserDetailsImpl implements UserDetails {
     private final transient User user;
 
     /**
-     * 사용자의 등급을 반환하는 메서드입니다.
-     *
-     * @return 사용자의 등급
-     */
-    public UserGrade getUserGrade(){
-        return user.getUserGrade();
-    }
-
-    /**
      * UserDetail 객체를 생성하는 생성자입니다.
      *
      * @param user 사용자 정보를 담은 User 객체
@@ -112,5 +103,14 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    /**
+     * 사용자의 등급을 반환하는 메서드입니다.
+     *
+     * @return 사용자의 등급
+     */
+    public UserGrade getUserGrade(){
+        return user.getUserGrade();
     }
 }
